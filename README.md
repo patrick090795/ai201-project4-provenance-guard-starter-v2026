@@ -60,42 +60,6 @@ under_review, and confirms that the appeal was received.
 The original decision remains in the audit log.
 An appeal does not automatically rerun the detector or reverse the decision.
 
-
-### Planned endpoint contracts
-
-These describe the planned API, not results from a working service.
-
-#### POST /submit
-
-Request fields:
-- text: a non-empty string containing the writing.
-- creator_id: a non-empty string identifying the writer.
-
-Successful response fields:
-- content_id: a unique string identifying the submission.
-- guess: "human", "AI", or "unsure".
-- confidence: a number from 0 to 1 representing AI-likelihood;
-  higher values mean more AI-like, not greater certainty in either direction.
-- label: the full-sentence message shown to the reader.
-- model_score: the model signal's AI-likelihood score, from 0 to 1.
-- style_score: the style signal's AI-likelihood score, from 0 to 1.
-- status: "scored".
-
-#### POST /appeal
-
-Request fields:
-- content_id: the ID of an existing submission.
-- reasoning: a non-empty string explaining why the writer disputes the result.
-
-Successful response fields:
-- content_id: the submission being appealed.
-- status: "under_review".
-- message: confirmation that the appeal was recorded.
-
-Invalid requests return a JSON error with an appropriate HTTP status:
-- 400 for missing, empty, or incorrectly typed required fields.
-- 404 when an appeal refers to an unknown content_id.
-
 ---
 
 ## Signals and Scoring
@@ -160,47 +124,56 @@ Invalid requests return a JSON error with an appropriate HTTP status:
 
 ## Sample Run
 
-<!-- One submission and one appeal, pasted as text: the request, the response,
-     and the log entries. -->
-
 **A submission**
 
-<!-- The response needs content_id, guess, confidence, label, AND both
-     signal scores - model_score and style_score. Unit 8's tools read those
-     two off the response, so leaving them out costs you next unit's
-     diagnostics. -->
-
 ```bash
-$ curl -X POST http://127.0.0.1:5000/submit \
+curl -X POST http://127.0.0.1:5000/submit \
   -H "Content-Type: application/json" \
-  -d '{"text": "...", "creator_id": "..."}'
+  -d '{"text":"I think the  us congres will be fliped by the democrats for this us midterm 2026.","creator_id":"patrick"}'
 ```
 
 ```json
-
+{
+  "confidence": null,
+  "content_id": "4e4032b2-ac91-49be-87f0-18fb571094c9",
+  "guess": "human",
+  "label": "Model signal only. Final scoring and labels are not connected.",
+  "model_score": 0.028,
+  "status": "scored",
+  "style_score": null
+}
 ```
 
 **An appeal**
 
-```bash
-$ curl -X POST http://127.0.0.1:5000/appeal \
-  -H "Content-Type: application/json" \
-  -d '{"content_id": "...", "reasoning": "..."}'
-```
-
-```json
-
-```
+Not implemented yet. The request, response, and audit log
+evidence will be added in Milestone 5.
 
 **What the log shows afterwards**
 
 ```bash
-$ curl "http://127.0.0.1:5000/log?limit=3"
+curl "http://127.0.0.1:5000/log?limit=1"
 ```
 
 ```json
-
+{
+  "count": 1,
+  "entries": [
+    {
+      "combined_score": null,
+      "content_id": "4e4032b2-ac91-49be-87f0-18fb571094c9",
+      "creator_id": "patrick",
+      "guess": "human",
+      "label": "Model signal only. Final scoring and labels are not connected.",
+      "model_score": 0.028,
+      "status": "scored",
+      "style_score": null,
+      "timestamp": "2026-11-04T02:59:13+00:00"
+    }
+  ]
+}
 ```
+
 
 ---
 
