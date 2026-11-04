@@ -35,37 +35,86 @@
 <!-- ═══════════════════════ UNIT 7 — THE BUILD ═══════════════════════ -->
 
 ## What This Does
+1. A writer sends their text and creator_id to POST /submit.
+2. The service checks that the input is valid and assigns a unique content_id.
+3. The model signal reads the text and produces a score indicating how AI-like it appears.
+4. The style signal measures sentence length variation, word variety, and punctuation patterns.
+5. The combining rule combines both signal scores into one overall score.
+6. The score maps to a full-sentence label: high-confidence human, unsure, or high-confidence AI.
+7. The service records the decision in the audit log and returns the content_id, guess, confidence, label, and both signal scores.
 
-<!-- The path a submission takes, from arriving to the label a reader sees.
-     Six or seven steps — this is the trace you wrote in Milestone 1. -->
+
+### When the system wrongly flags human writing
+
+A writer submits a piece they wrote themselves. In this hypothetical
+example, the combined AI-likelihood score is 0.92 and falls in the
+high-confidence AI range.
+
+The label says: "Our automated checks suggest this text may be
+AI-generated. This result can be wrong. If you wrote it yourself,
+you can request a review."
+
+The writer sends the content_id and their explanation to POST /appeal.
+The service records the appeal, changes the item's status to
+under_review, and confirms that the appeal was received.
+The original decision remains in the audit log.
+An appeal does not automatically rerun the detector or reverse the decision.
 
 
+### Planned endpoint contracts
+
+These describe the planned API, not results from a working service.
+
+#### POST /submit
+
+Request fields:
+- text: a non-empty string containing the writing.
+- creator_id: a non-empty string identifying the writer.
+
+Successful response fields:
+- content_id: a unique string identifying the submission.
+- guess: "human", "AI", or "unsure".
+- confidence: a number from 0 to 1 representing AI-likelihood;
+  higher values mean more AI-like, not greater certainty in either direction.
+- label: the full-sentence message shown to the reader.
+- model_score: the model signal's AI-likelihood score, from 0 to 1.
+- style_score: the style signal's AI-likelihood score, from 0 to 1.
+- status: "scored".
+
+#### POST /appeal
+
+Request fields:
+- content_id: the ID of an existing submission.
+- reasoning: a non-empty string explaining why the writer disputes the result.
+
+Successful response fields:
+- content_id: the submission being appealed.
+- status: "under_review".
+- message: confirmation that the appeal was recorded.
+
+Invalid requests return a JSON error with an appropriate HTTP status:
+- 400 for missing, empty, or incorrectly typed required fields.
+- 404 when an appeal refers to an unknown content_id.
 
 ---
 
 ## Signals and Scoring
 
-<!-- For each signal: what property it measures, why that might differ between
-     human and AI writing, and WHAT IT CAN'T SEE.
-
-     The blind spot is not optional. If you can't name it you don't understand
-     the signal yet — and unit 8's attack set is built out of blind spots. -->
-
 ### Signal one — the model signal
 
-**What it measures:**
+**What it measures:** A local detector model scores how closely the writing resembles patterns it learned from human and AI-generated text.
 
-**Why that might differ between human and AI writing:**
+**Why that might differ between human and AI writing:** Human and AI-generated writing may show different patterns in wording and sentence structure that the model learned during training.
 
-**What it can't see:**
+**What it can't see:** It cannot verify who actually wrote the text or how it was created. Formal human writing may look AI-generated, and edited AI text may look human.
 
 ### Signal two — the style signal
 
-**What it measures:**
+**What it measures:** Sentence length variation, the ratio of unique words to total words, and punctuation density.
 
-**Why that might differ between human and AI writing:**
+**Why that might differ between human and AI writing:** Some AI-generated writing may be more uniform or repetitive, while human writing may vary more. These are clues, not reliable rules.
 
-**What it can't see:**
+**What it can't see:** It does not understand meaning or verify authorship. A human can write in a regular style, and AI text can be edited to change these statistics.
 
 ### The combining rule
 
