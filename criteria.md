@@ -42,65 +42,68 @@ Two things worth knowing before you pick numbers:
   a **miss**.
 
 ---
-## 1.
+## 1. False positives on human writing
 
-<!-- Your criterion. It must name a number. -->
-
-
-
-**Why this target:**
-
-
-
----
-
-## 2.
-
-<!-- Your criterion. -->
-
-
+Of 10 short pieces I wrote myself, at most 1 may receive the
+high-confidence AI label.
 
 **Why this target:**
 
+I can accept one mistake in this small test, but wrongly flagging
+several of my pieces would make the service difficult to trust.
 
+## 2. Score separation
 
----
-
-## 3.
-
-<!-- Your criterion. -->
-
-
-
-**Why this target:**
-
-
-
----
-
-## 4.
-
-<!-- Your criterion. -->
-
-
+Across 10 human-written pieces and 10 AI-generated pieces,
+the average AI-likelihood score for AI-generated writing
+must be at least 0.30 higher than the average for human writing.
 
 **Why this target:**
 
-
+I chose 0.30 as the minimum separation I want between the
+two groups, without requiring perfect scores of 0 and 1.
 
 ---
 
-## 5.
+## 3. Label coverage
 
-<!-- Your criterion. -->
-
-
+Actual submissions must produce each of the three labels
+at least once: high-confidence human, unsure, and
+high-confidence AI.
 
 **Why this target:**
 
-
+I want to check that the system can return all three outcomes,
+including uncertainty.
 
 ---
+
+## 4. Appeal path
+
+For 5 out of 5 valid appeals on existing submissions, the
+service must save the writer's explanation in the audit log,
+change the submission's status to under_review, and return
+confirmation.
+
+**Why this target:**
+
+I want to evaluate whether the appeal process completes
+all required actions every time it is tested.
+
+---
+
+## 5. Invalid requests
+
+Every tested request with missing, empty, or incorrectly
+typed required fields must return HTTP 400 with a JSON error.
+An appeal with an unknown content_id must return HTTP 404
+with a JSON error.
+
+**Why this target:**
+
+I want to evaluate whether the service responds to invalid
+requests with the expected errors.
+
 
 <!-- ─────────────────────────────────────────────────────────────────────────
      UNIT 8 — read this before you change anything above.
