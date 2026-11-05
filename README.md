@@ -51,8 +51,7 @@ example, the combined AI-likelihood score is 0.92 and falls in the
 high-confidence AI range.
 
 The label says: "Our automated checks suggest this text may be
-AI-generated. This result can be wrong. If you wrote it yourself,
-you can request a review."
+AI-generated. This result can be wrong. You can request a review."
 
 The writer sends the content_id and their explanation to POST /appeal.
 The service records the appeal, changes the item's status to
@@ -75,11 +74,17 @@ the original. These edits did not reduce the combined score.
 
 ### Signal one — the model signal
 
-**What it measures:** A local detector model scores how closely the writing resembles patterns it learned from human and AI-generated text.
+**What it measures:** GPT-2 measures text predictability using
+perplexity. detector.py converts this into a score from 0 to 1.
+Lower perplexity produces a higher AI-likelihood score.
 
-**Why that might differ between human and AI writing:** Human and AI-generated writing may show different patterns in wording and sentence structure that the model learned during training.
+**Why that might differ between human and AI writing:**
+AI-generated text may use predictable wording, but human writing
+can also be predictable. This is an experimental clue.
 
-**What it can't see:** It cannot verify who actually wrote the text or how it was created. Formal human writing may look AI-generated, and edited AI text may look human.
+**What it can't see:** It cannot verify authorship or the writing
+process. Plain or conventional human writing may score highly,
+while unusual wording or edited AI writing may score lower.
 
 ### Signal two — the style signal
 
@@ -218,18 +223,30 @@ curl "http://127.0.0.1:5000/log?limit=2"
 ---
 
 ## How I Used AI
+**Moment 1 — Connecting the signals**
 
-**Moment 1**
+- *What I asked for:* I asked ChatGPT to help connect the model
+  and style signals to my submission endpoint.
+- *What came back:* It provided code to calculate both scores,
+  combine them, and save the results in the audit log.
+- *What I changed:* After getting a model_score NameError,
+  I used its guidance to restore the detector call before
+  combining the scores. I reran the request and checked that
+  all three scores appeared in the audit log.
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+**Moment 2 — Building and testing the style signal**
 
-**Moment 2**
-
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked ChatGPT for help implementing
+  the style signal using the starter files.
+- *What came back:* It supplied functions for sentence length
+  variation, word variety, and punctuation density, with an
+  experimental rule for combining them.
+- *What I changed:* I replaced the starter stubs with the
+  suggested implementation and removed the outdated stub
+  message. During testing, I corrected sentence spacing in
+  my sample so the splitter recognized three sentences.
+  I documented the actual results, including cases where
+  the two signals disagreed on my human-written text.
 
 <!-- ═══════════════════════ UNIT 8 — THE TEST ═══════════════════════ -->
 
