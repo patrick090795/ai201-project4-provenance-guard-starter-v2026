@@ -121,29 +121,25 @@ toward the middle; it does not provide evidence of AI authorship.
 
 
 ---
-
 ## Label Variants
-
-<!-- The exact text of all three labels, as a reader would see them, and the
-     score range each covers.
-
-     Write them for someone who has never heard the word "threshold". -->
 
 | Label | Score range | The exact text a reader sees |
 |---|---|---|
-| high-confidence human |  |  |
-| unsure |  |  |
-| high-confidence AI |  |  |
+| high-confidence human | 0 ≤ score ≤ 0.35 | Our automated checks suggest this text was written by a person. This result is not proof of authorship. |
+| unsure | 0.35 < score < 0.65 | Our automated checks cannot confidently determine how this text was created. This uncertainty is not an accusation. You can request a review. |
+| high-confidence AI | 0.65 ≤ score ≤ 1 | Our automated checks suggest this text may be AI-generated. This result can be wrong. You can request a review. |
 
 **Why I worded the "unsure" one this way:**
-<!-- It's the hardest of the three. It has to admit uncertainty without
-     sounding like an accusation, because the person reading it may well have
-     written every word themselves. -->
 
+The label explains that the system cannot confidently decide,
+without accusing the writer. It also tells the writer that
+they can request a review.
 
-
+Actual submissions produced all three labels:
+- Human sentence: 0.264, human.
+- Formal human email: 0.48465, unsure.
+- AI-generated paragraph: 0.6608, ai.
 ---
-
 ## Sample Run
 
 **A submission**
@@ -151,51 +147,73 @@ toward the middle; it does not provide evidence of AI authorship.
 ```bash
 curl -X POST http://127.0.0.1:5000/submit \
   -H "Content-Type: application/json" \
-  -d '{"text":"I think the  us congres will be fliped by the democrats for this us midterm 2026.","creator_id":"patrick"}'
+  -d '{"text":"Dear Team manager, I hope this email finds you well. I would like to let you know that due to unforeseen reasons I will not be able to submit my work progress and do presentations. I will resume my work and presentation next week. Thank you !","creator_id":"calibration-formal-human"}'
 ```
 
 ```json
 {
-  "confidence": null,
-  "content_id": "4e4032b2-ac91-49be-87f0-18fb571094c9",
-  "guess": "human",
-  "label": "Model signal only. Final scoring and labels are not connected.",
-  "model_score": 0.028,
+  "confidence": 0.48465,
+  "content_id": "83627415-6d70-4e9f-a74c-190408966f51",
+  "guess": "unsure",
+  "label": "Our automated checks cannot confidently determine how this text was created. This uncertainty is not an accusation. You can request a review.",
+  "model_score": 0.6694,
   "status": "scored",
-  "style_score": null
+  "style_score": 0.2999
 }
 ```
 
 **An appeal**
 
-Not implemented yet. The request, response, and audit log
-evidence will be added in Milestone 5.
-
-**What the log shows afterwards**
-
 ```bash
-curl "http://127.0.0.1:5000/log?limit=1"
+curl -X POST http://127.0.0.1:5000/appeal \
+  -H "Content-Type: application/json" \
+  -d '{"content_id":"83627415-6d70-4e9f-a74c-190408966f51","reasoning":"I wrote this email myself to explain my absence and request more time."}'
 ```
 
 ```json
 {
-  "count": 1,
+  "content_id": "83627415-6d70-4e9f-a74c-190408966f51",
+  "message": "Your appeal has been recorded for review.",
+  "status": "under_review"
+}
+```
+
+**What the log showed after the first appeal**
+
+This output was captured immediately after the first appeal,
+before the later repeated appeal and label tests.
+
+```bash
+curl "http://127.0.0.1:5000/log?limit=2"
+```
+
+```json
+{
+  "count": 2,
   "entries": [
     {
-      "combined_score": null,
-      "content_id": "4e4032b2-ac91-49be-87f0-18fb571094c9",
-      "creator_id": "patrick",
-      "guess": "human",
-      "label": "Model signal only. Final scoring and labels are not connected.",
-      "model_score": 0.028,
+      "combined_score": 0.48465,
+      "content_id": "83627415-6d70-4e9f-a74c-190408966f51",
+      "creator_id": "calibration-formal-human",
+      "guess": "unsure",
+      "label": "Our automated checks cannot confidently determine how this text was created. This uncertainty is not an accusation. You can request a review.",
+      "model_score": 0.6694,
       "status": "scored",
-      "style_score": null,
-      "timestamp": "2026-11-04T02:59:13+00:00"
+      "style_score": 0.2999,
+      "timestamp": "2026-11-05T01:30:49+00:00"
+    },
+    {
+      "content_id": "83627415-6d70-4e9f-a74c-190408966f51",
+      "creator_id": "calibration-formal-human",
+      "event": "appeal",
+      "reasoning": "I wrote this email myself to explain my absence and request more time.",
+      "status": "under_review",
+      "timestamp": "2026-11-05T01:36:01+00:00"
     }
   ]
 }
 ```
-
+---
 
 ---
 

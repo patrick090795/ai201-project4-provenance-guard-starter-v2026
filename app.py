@@ -244,9 +244,7 @@ def submit():
     content_id = str(uuid.uuid4())
 
     # Temporary guess and label until Milestone 5.
-    guess = "ai" if combined_score >= 0.5 else "human"
-    label = "Both signals are connected. Final labels are not implemented yet."
-
+    guess, label = scoring.score_to_label(combined_score)
     audit.log_decision(
         content_id=content_id,
         creator_id=creator_id,
@@ -287,15 +285,53 @@ def appeal():
     to the person on the other end. It's the only thing standing between a
     wrong accusation and nothing at all.
     """
-    payload = request.get_json(silent=True) or {}
+   
+    payload = request.get_json(silent=True)
 
-    # TODO: delete this and build the route.
+    if not isinstance(payload, dict):
+        return jsonify({
+            "error": "invalid_input",
+            "message": "Send a JSON object with content_id and reasoning.",
+        }), 400
+
+    content_id = payload.get("content_id")
+    reasoning = payload.get("reasoning")
+
+    if not isinstance(content_id, str) or not content_id.strip():
+        return jsonify({
+            "error": "invalid_input",
+            "message": "content_id must be a non-empty string.",
+        }), 400
+
+    if not isinstance(reasoning, str) or not reasoning.strip():
+        return jsonify({
+            "error": "invalid_input",
+            "message": "reasoning must be a non-empty string.",
+        }), 400
+
+    entries = audit.entries_for(content_id)
+    decision = next(
+        (entry for entry in entries if entry.get("status") == "scored"),
+        None,
+    )
+
+    if decision is None:
+        return jsonify({
+            "error": "not_found",
+            "message": "No submission exists with that content_id.",
+        }), 404
+
+    audit.log_appeal(
+        content_id=content_id,
+        creator_id=decision["creator_id"],
+        reasoning=reasoning,
+    )
+
     return jsonify({
-        "error": "not_implemented",
-        "message": "POST /appeal isn't built yet — see the TODO in app.py.",
-        "you_sent": payload,
-    }), 501
-
+        "content_id": content_id,
+        "status": "under_review",
+        "message": "Your appeal has been recorded for review.",
+    }), 200
 
 # ── Already works ─────────────────────────────────────────────────────────────
 
