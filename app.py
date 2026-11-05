@@ -31,6 +31,8 @@ from flask import Flask, jsonify, request
 import audit
 import config
 import detector
+import scoring
+import stylometry
 
 app = Flask(__name__)
 
@@ -236,20 +238,22 @@ def submit():
             "message": "The detector could not load. Check the server terminal.",
         }), 503
 
-    content_id = str(uuid.uuid4())
-    guess = "ai" if model_score >= 0.5 else "human"
+    style_score = stylometry.style_signal(text)
+    combined_score = scoring.combine_signals(model_score, style_score)
 
-    # Temporary placeholders until scoring and labels are implemented.
-    confidence = None
-    label = "Model signal only. Final scoring and labels are not connected."
+    content_id = str(uuid.uuid4())
+
+    # Temporary guess and label until Milestone 5.
+    guess = "ai" if combined_score >= 0.5 else "human"
+    label = "Both signals are connected. Final labels are not implemented yet."
 
     audit.log_decision(
         content_id=content_id,
         creator_id=creator_id,
         guess=guess,
         model_score=model_score,
-        style_score=None,
-        combined_score=None,
+        style_score=style_score,
+        combined_score=combined_score,
         label=label,
         status="scored",
     )
@@ -257,13 +261,12 @@ def submit():
     return jsonify({
         "content_id": content_id,
         "guess": guess,
-        "confidence": confidence,
+        "confidence": combined_score,
         "label": label,
         "model_score": model_score,
-        "style_score": None,
+        "style_score": style_score,
         "status": "scored",
     }), 200
-
 @app.post("/appeal")
 def appeal():
     """

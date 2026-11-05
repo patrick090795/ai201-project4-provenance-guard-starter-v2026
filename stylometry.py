@@ -64,8 +64,13 @@ def sentence_length_spread(text: str) -> float:
     `stdev` raises on fewer than two values. Decide what that should return
     before the attack set decides for you.
     """
-    # TODO: replace this
-    return 0.0
+    lengths = [len(words(sentence)) for sentence in sentences(text)]
+    lengths = [length for length in lengths if length > 0]
+
+    if len(lengths) < 2:
+            return 0.0
+
+    return statistics.stdev(lengths) / statistics.mean(lengths)
 
 
 def type_token_ratio(text: str) -> float:
@@ -80,8 +85,11 @@ def type_token_ratio(text: str) -> float:
     directly comparable on it, and if your test inputs vary a lot in length,
     that alone can look like a signal.
     """
-    # TODO: replace this
-    return 0.0
+    tokens = words(text)
+    if not tokens:
+        return 0.0
+
+    return len(set(tokens)) / len(tokens)
 
 
 def punctuation_density(text: str) -> float:
@@ -94,8 +102,13 @@ def punctuation_density(text: str) -> float:
         more interesting than full stops, because they vary more between
         writers.
     """
-    # TODO: replace this
-    return 0.0
+    characters = [character for character in text if not character.isspace()]
+    if not characters:
+        return 0.0
+
+    punctuation = ".,!?;:-—–()[]{}\"'…"
+    count = sum(character in punctuation for character in characters)
+    return count / len(characters)
 
 
 # ── Combining them ───────────────────────────────────────────────────────────
@@ -122,8 +135,32 @@ def style_signal(text: str) -> float:
     you trust it. Plain and ordinary, not formal: formal prose reads as *human*
     to signal one, and it is plain writing that gets accused.
     """
-    # TODO: replace this
-    return 0.5
+    tokens = words(text)
+    sentence_count = sum(bool(words(s)) for s in sentences(text))
+
+    # Too little text to interpret these statistics confidently.
+    if len(tokens) < 20 or sentence_count < 3:
+        return 0.5
+
+    spread = sentence_length_spread(text)
+    variety = type_token_ratio(text)
+    density = punctuation_density(text)
+
+    # More uniform sentence lengths receive a higher score.
+    uniformity_score = 1.0 - min(spread, 1.0)
+
+    # More repeated vocabulary receives a higher score.
+    repetition_score = 1.0 - variety
+
+    # An experimental assumption: sparse punctuation raises the score.
+    sparse_punctuation_score = 1.0 - min(density / 0.10, 1.0)
+
+    score = (
+        0.5 * uniformity_score
+        + 0.3 * repetition_score
+        + 0.2 * sparse_punctuation_score
+    )
+    return round(max(0.0, min(score, 1.0)), 4)
 
 
 if __name__ == "__main__":
@@ -139,4 +176,4 @@ if __name__ == "__main__":
     print(f"type_token_ratio         {type_token_ratio(text)}")
     print(f"punctuation_density      {punctuation_density(text)}")
     print(f"style_signal             {style_signal(text)}   (higher = more likely AI)")
-    print("\nAll zeros? These are stubs — Milestone 4 is where you build them.")
+   

@@ -64,6 +64,15 @@ An appeal does not automatically rerun the detector or reverse the decision.
 
 ## Signals and Scoring
 
+The signals disagreed on both human-written samples. For my
+formal email, the model returned 0.6694 while the style signal
+returned 0.2999. Equal weighting produced 0.48465, near the
+middle. This shows that predictable human writing can receive
+a high model score.
+
+The edited AI sample scored 0.6672, compared with 0.6608 for
+the original. These edits did not reduce the combined score.
+
 ### Signal one — the model signal
 
 **What it measures:** A local detector model scores how closely the writing resembles patterns it learned from human and AI-generated text.
@@ -82,20 +91,33 @@ An appeal does not automatically rerun the detector or reverse the decision.
 
 ### The combining rule
 
-<!-- Write the rule in words, then give the numbers. What happens when the two
-     signals disagree? -->
-
 **The rule:**
+
+I use an equal-weight average of the model and style signals.
+Both scores run from 0 to 1, with higher values meaning more
+AI-like text. When they disagree, the average falls between them.
+These scores are experimental indicators, not verified probabilities.
 
 **The numbers:**
 
-**Where it lives:** `scoring.py::combine_signals`
+combined_score = 0.5 * model_score + 0.5 * style_score
 
-<!-- ⚠️ The grader checks your code against that line. If your rule lives
-     somewhere else, say where. -->
+The weights are stored in config.py:
+- WEIGHT_MODEL_SIGNAL = 0.5
+- WEIGHT_STYLE_SIGNAL = 0.5
+
+**Where it lives:** `scoring.py::combine_signals`
 
 **A case where my two signals split, and what my rule does with it:**
 
+For the sample beginning "The system works well.", the model
+returned 0.6722 and the style signal returned 0.4769.
+Their equal-weight average is 0.57455, between the two scores.
+
+For my short human-written sentence, the model returned 0.028
+and the style signal returned its short-text fallback of 0.5.
+The combined score would be 0.264. The fallback pulls the score
+toward the middle; it does not provide evidence of AI authorship.
 
 
 ---
