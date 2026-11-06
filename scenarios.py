@@ -21,52 +21,62 @@ A scenario carries **either** of these:
               field at all, something enormous. A bad-input criterion needs it,
               because you cannot express "the field is missing" as a string.
 """
+WRITING_SAMPLES = [
+    "I spent some time working at the library after lunch. My laptop battery was low, so I spent the first few minutes searching for a seat close to an outlet.",
+    "I kept looking up the room number before entering class throughout my first week. Finding the entrance nearest to my classroom took several days.",
+    "If someone's writing is flagged by  detector, they ought to be given an opportunity to clarify how they produced it. The way a teacher or reviewer handles their work can be impacted by the incorrect flag.",
+    "I attempted to request something that wasn't in the lists while testing FitFindr. That made it easier for me to see if the agent would pause and describe what transpired rather than recommending an item it hadn't located.",
+]
+
+AI_SAMPLES = [
+    "I built a small app that gives a piece of writing an AI-likelihood score. It can also say it is unsure, which matters when the evidence is weak.",
+    "My email address showed up in the resume form, but it was missing from the PDF. I checked the template first because I wanted to see what happened between filling out the form and downloading the file.",
+    "I sent fifteen requests using the same creator ID. The first ten went through, and the next five returned HTTP 429. I checked the audit log and found all five rejections.",
+    "I had trouble deciding whether a comment was analysis or a hot take. I looked for a specific detail that supported the claim, because some comments sounded convincing even when they gave very little evidence.",
+    "I start the Flask app in one terminal and leave it running. Then I open another terminal to send requests so I can read the response and still see any errors on the server.",
+    "Hi, I’m working on the next part of the assignment and got stuck setting up the test files. Could you tell me which folder they should go in?",
+    "After lunch, I went to the library to work for a while. I spent the first few minutes looking for a seat near an outlet because my laptop battery was low.",
+    "During my first week, I kept checking the room number before walking into class. It took me a few days to learn which entrance was closest to my classroom.",
+    "If a detector flags someone’s writing, the writer should have a chance to explain how they wrote it. A wrong flag can affect how a teacher or reviewer treats their work.",
+    "While testing FitFindr, I tried asking for something that wasn’t in the listings. That helped me check whether the agent would stop and explain what happened instead of suggesting an item it hadn’t found.",
+]
 
 SCENARIOS = [
     {
-        "name": "my own writing",
+        "name": "False positives",
         "criterion": 1,
-        # ⚠️ PUT YOUR OWN WRITING HERE. Not AI text, not a sample from the web —
-        # things you actually wrote. This is the criterion that matters most and
-        # it's meaningless with someone else's prose.
+        "texts": WRITING_SAMPLES,
+    },
+    {
+        # Positions 1–10 are your samples. Positions 11–20 are AI samples.
+        "name": "Score separation",
+        "criterion": 2,
+        "texts": WRITING_SAMPLES + AI_SAMPLES,
+    },
+    {
+        # Reuse the texts from the Milestone 1 log check and add the AI samples.
+        "name": "Label coverage",
+        "criterion": 3,
         "texts": [
-            "REPLACE ME with a paragraph you wrote yourself.",
-            "REPLACE ME with another one. Ten pieces is the usual number.",
+            "I walked to the library after lunch.",
+            "The workshop starts at nine tomorrow morning.",
+            "We fixed the bug and tested the form again.",
+            *AI_SAMPLES,
         ],
     },
     {
-        "name": "label coverage",
-        "criterion": 2,
-        # Inputs spread across your score range, so you can check all three
-        # labels are actually reachable.
-        "texts": [
-            "REPLACE ME with something you're confident is AI-generated.",
-            "REPLACE ME with something you're confident is human-written.",
-            "REPLACE ME with something genuinely borderline.",
+        "name": "Invalid submit requests",
+        "criterion": 5,
+        "bodies": [
+            {"creator_id": "eval_missing_text"},
+            {"text": "", "creator_id": "eval_empty_text"},
+            {"text": 123, "creator_id": "eval_number_text"},
+            {"text": "This request has no creator ID."},
+            {"text": "This request has an empty creator ID.", "creator_id": ""},
+            {"text": "This request has a numeric creator ID.", "creator_id": 123},
         ],
     },
-    # A bad-input criterion looks like this. Uncomment and adjust if that's one
-    # of your five — these are raw request bodies, sent exactly as written.
-    #
-    # {
-    #     "name": "bad input",
-    #     "criterion": 3,
-    #     "bodies": [
-    #         {"text": "", "creator_id": "eval_bad_empty"},
-    #         {"creator_id": "eval_bad_missing"},          # no text field at all
-    #         {"text": "word " * 50000, "creator_id": "eval_bad_huge"},
-    #         {"text": None, "creator_id": "eval_bad_null"},
-    #     ],
-    # },
-
-    # TODO: add what your remaining criteria need.
-    #
-    # A criterion about the appeal path can't be tested by sending text alone;
-    # it needs a submission first and then an appeal against the content_id
-    # that came back. You'll need to test that one by hand, or extend this file
-    # and run_eval.py to do it. Saying which you did is part of the write-up.
 ]
-
 
 def validate() -> list[str]:
     """
