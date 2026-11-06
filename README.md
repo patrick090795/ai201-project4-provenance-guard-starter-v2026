@@ -391,77 +391,209 @@ These ten entries come from the baseline run. The final entry records one of the
 
 ## Run Log and Verdicts
 
-<!-- Your five criteria across three trials. `run_eval.py --label before`. -->
+The writing scenarios were rerun at both thresholds using the same inputs after an earlier rerun omitted six samples. The two writing groups are paired by topic. Each uses ten pieces, with my versions based on the AI examples.
 
-| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
-|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| Criterion | Target | Before 1 | Before 2 | Before 3 | After 1 | After 2 | After 3 | Verdict |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| 1. False positives | At most 1 of 10 flagged as AI | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | MET |
+| 2. Score separation | AI mean at least 0.30 higher | 0.011005 | 0.011005 | 0.011005 | 0.011005 | 0.011005 | 0.011005 | MISSED |
+| 3. Label coverage | All three labels | 2/3 | 2/3 | 2/3 | 2/3 | 2/3 | 2/3 | MISSED |
+| 4. Appeal path | Five confirmations and matching audit entries | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Invalid requests | Six JSON 400 responses and one JSON 404 | 7/7 | 7/7 | 7/7 | 7/7 | 7/7 | 7/7 | MET with fresh quota |
 
-**Real output from one trial**, pasted as text, naming the file and function
-that produced it:
+The matched reports are [before](results/run_2026-11-05_2258_before_matched.md) and [after](results/run_2026-11-05_2259_after_matched.md). The API follow-up checks recorded the full JSON bodies in [before](results/appeal_and_invalid_before.json) and [after](results/appeal_and_invalid_after.json). In the rapid after run, 8 of 18 invalid submissions received HTTP 429. Missing, blank, and numeric creator IDs shared the address-based quota. After a restart, the follow-up run returned the expected errors in all three trials.
+
+### Trial 1 evidence
+
+Criteria 1–3 below are excerpts recorded by `run_eval.py::main` from `app.py::submit` in the matched before run.
+
+**Criterion 1**
 
 ```json
-
+{
+  "status": 200,
+  "guess": "unsure",
+  "confidence": 0.48414999999999997,
+  "model_score": 0.4683,
+  "style_score": 0.5,
+  "label": "Our automated checks cannot confidently determine how this text was created. This uncertainty is not an accusation. You can request a review.",
+  "sent": "I created a little program that assigns an AI-likelihood score to a pi"
+}
 ```
 
-**Diagnoses**
+**Criterion 2, first writing sample and first AI sample**
 
-<!-- For each miss AND each broken attack: the stage and the mechanism.
+```json
+[
+  {
+    "status": 200,
+    "guess": "unsure",
+    "confidence": 0.48414999999999997,
+    "model_score": 0.4683,
+    "style_score": 0.5,
+    "label": "Our automated checks cannot confidently determine how this text was created. This uncertainty is not an accusation. You can request a review.",
+    "sent": "I created a little program that assigns an AI-likelihood score to a pi"
+  },
+  {
+    "status": 200,
+    "guess": "unsure",
+    "confidence": 0.41575,
+    "model_score": 0.3315,
+    "style_score": 0.5,
+    "label": "Our automated checks cannot confidently determine how this text was created. This uncertainty is not an accusation. You can request a review.",
+    "sent": "I built a small app that gives a piece of writing an AI-likelihood sco"
+  }
+]
+```
 
-     Your service has five stages: the route, signal one, signal two, the
-     combining rule, and the label mapping.
+**Criterion 3, highest-scoring submission**
 
-     Not a diagnosis:  "The evasion attacks got through."
-     A diagnosis:      "Four evasion inputs got through. All four had typos
-                        added to AI-generated text. My second signal measures
-                        word variety, and typos raise word variety — so it read
-                        them as more human. My combining rule weights that
-                        signal at 0.6, so it dragged the whole score down."
+```json
+{
+  "status": 200,
+  "guess": "unsure",
+  "confidence": 0.5851999999999999,
+  "model_score": 0.6704,
+  "style_score": 0.5,
+  "label": "Our automated checks cannot confidently determine how this text was created. This uncertainty is not an accusation. You can request a review.",
+  "sent": "During my first week, I kept checking the room number before walking i"
+}
+```
 
-     Look for a pattern. Five failures on one signal is one problem, not five. -->
+**Criterion 4, valid appeal and audit entry from the separate API check**
 
+```json
+{
+  "response": {
+    "http": 200,
+    "json": {
+      "content_id": "7d0ae0a9-fb3d-441f-973d-7de5dbe25b94",
+      "message": "Your appeal has been recorded for review.",
+      "status": "under_review"
+    }
+  },
+  "audit": {
+    "content_id": "7d0ae0a9-fb3d-441f-973d-7de5dbe25b94",
+    "creator_id": "appeal_ac15df4d0dd34e1a9a9c4241259ace30_1_1",
+    "event": "appeal",
+    "reasoning": "Trial 1, appeal 1: please review my submission.",
+    "status": "under_review",
+    "timestamp": "2026-11-06T03:18:47+00:00"
+  },
+  "passed": true
+}
+```
 
+**Criterion 5, invalid submission and unknown appeal from the separate API check**
+
+```json
+[
+  {
+    "http": 400,
+    "json": {
+      "error": "invalid_input",
+      "message": "text must be a non-empty string."
+    }
+  },
+  {
+    "http": 404,
+    "json": {
+      "error": "not_found",
+      "message": "No submission exists with that content_id."
+    }
+  }
+]
+```
+
+### Diagnoses
+
+- **Criterion 2 (signals and combining rule).** The writing samples averaged 0.464945 and the AI samples averaged 0.475950. The two signals gave the groups overlapping scores, and their average separated the groups by only 0.011005. The label cutoff has no effect on these raw scores.
+- **Criterion 3 (label mapping).** None of the 13 matched coverage samples reached the AI cutoff even at 0.65. The staff run did reach the AI band, so the miss describes the coverage set.
+- **EV01, EV04, EV08 (model signal).** The model scores for the typo, unusual-word, and short-window variants were too low for the combined scores to reach the AI band.
+- **EV02, EV03, EV06, EV07 (style and combining rule).** The sentence-shape, quotation, and punctuation changes yielded style scores that kept the average below the AI cutoff even when the model score was higher.
+- **EV05, EV09 (both signals and combining rule).** Heavy editing and a human opening produced averages in the human or unsure bands, respectively.
+- **FP02–FP07 (label mapping).** Human samples across formal, careful, templated, technical, and repetitive writing scored 0.657–0.715, so the 0.65 cutoff turned moderate scores into AI labels.
+- **MF03–MF06 and MF08 (route validation).** Control characters, punctuation, a very long word, emoji, and 60,000 characters reached scoring because the route checks for a nonempty string and accepted those inputs.
 
 ---
 
 ## The Improvement
 
-**What I changed:**
-
-**Which diagnosis pointed at it:**
+I raised the AI threshold from 0.65 to 0.72 after the baseline flagged six human-written staff samples. All six moved to `unsure`. EV10 still received `ai`, and the nine other evasion cases still avoided the AI flag. A higher cutoff can also move AI-generated text into the unsure band.
 
 ### Attack Run — After
 
-<!-- Same format. `run_attacks.py --label after` -->
+The 56 HTTP responses and guesses below come from the after run. I applied the same verdict rules as in the before run. PI02 retains its provisional verdict.
+
+| ID | HTTP | Before guess | After guess | Before verdict | After verdict |
+|---|---:|---|---|---|---|
+| EV01 | 200 | unsure | unsure | BROKE | BROKE |
+| EV02 | 200 | unsure | unsure | BROKE | BROKE |
+| EV03 | 200 | unsure | unsure | BROKE | BROKE |
+| EV04 | 200 | unsure | unsure | BROKE | BROKE |
+| EV05 | 200 | human | human | BROKE | BROKE |
+| EV06 | 200 | unsure | unsure | BROKE | BROKE |
+| EV07 | 200 | unsure | unsure | BROKE | BROKE |
+| EV08 | 200 | unsure | unsure | BROKE | BROKE |
+| EV09 | 200 | unsure | unsure | BROKE | BROKE |
+| EV10 | 200 | ai | ai | HELD | HELD |
+| FP01 | 200 | unsure | unsure | HELD | HELD |
+| FP02 | 200 | ai | unsure | BROKE | HELD |
+| FP03 | 200 | ai | unsure | BROKE | HELD |
+| FP04 | 200 | ai | unsure | BROKE | HELD |
+| FP05 | 200 | ai | unsure | BROKE | HELD |
+| FP06 | 200 | ai | unsure | BROKE | HELD |
+| FP07 | 200 | ai | unsure | BROKE | HELD |
+| FP08 | 200 | unsure | unsure | HELD | HELD |
+| PI01 | 200 | unsure | unsure | HELD | HELD |
+| PI02 | 200 | human | human | HELD | HELD |
+| PI03 | 200 | unsure | unsure | HELD | HELD |
+| PI04 | 200 | unsure | unsure | HELD | HELD |
+| PI05 | 200 | unsure | unsure | HELD | HELD |
+| PI06 | 200 | unsure | unsure | HELD | HELD |
+| MF01 | 400 | — | — | HELD | HELD |
+| MF02 | 400 | — | — | HELD | HELD |
+| MF03 | 200 | human | human | BROKE | BROKE |
+| MF04 | 200 | human | human | BROKE | BROKE |
+| MF05 | 200 | ai | ai | BROKE | BROKE |
+| MF06 | 200 | ai | ai | BROKE | BROKE |
+| MF07 | 200 | ai | unsure | HELD | HELD |
+| MF08 | 200 | ai | ai | BROKE | BROKE |
+| RQ01 | 400 | — | — | HELD | HELD |
+| RQ02 | 400 | — | — | HELD | HELD |
+| RQ03 | 400 | — | — | HELD | HELD |
+| RQ04 | 400 | — | — | HELD | HELD |
+| RQ05 | 400 | — | — | HELD | HELD |
+| RQ06 | 400 | — | — | HELD | HELD |
+| RQ07 | 400 | — | — | HELD | HELD |
+| RQ08 | 400 | — | — | HELD | HELD |
+| RQ09 | 400 | — | — | HELD | HELD |
+| RQ10 | 400 | — | — | HELD | HELD |
+| RQ11 | 400 | — | — | HELD | HELD |
+| RQ12 | 400 | — | — | HELD | HELD |
+| FL01_01 | 200 | human | human | HELD | HELD |
+| FL01_02 | 200 | human | human | HELD | HELD |
+| FL01_03 | 200 | human | human | HELD | HELD |
+| FL01_04 | 200 | human | human | HELD | HELD |
+| FL01_05 | 200 | human | human | HELD | HELD |
+| FL01_06 | 200 | human | human | HELD | HELD |
+| FL01_07 | 200 | human | human | HELD | HELD |
+| FL01_08 | 200 | human | human | HELD | HELD |
+| FL01_09 | 200 | human | human | HELD | HELD |
+| FL01_10 | 200 | human | human | HELD | HELD |
+| FL01_11 | 429 | — | — | HELD | HELD |
+| FL01_12 | 429 | — | — | HELD | HELD |
 
 
-
-**Did it help, and how do I know:**
-
-<!-- Widening the unsure band usually fixes one problem and creates another.
-     Reporting that trade honestly is worth full credit. -->
-
-
+The staff run went from 36 HELD and 20 BROKE to 42 HELD and 14 BROKE. The flood still accepted ten requests and returned HTTP 429 for the final two. See the [raw after report](results/attack_run_2026-11-05_2247_after.md).
 
 ---
 
 ## What's Still Broken
 
-<!-- For each attack still getting through and each criterion still missed:
-     what you'd do, and why you stopped. -->
+The nine evasion cases still avoid the AI flag. I would test the signals on independently written and AI-generated samples, including short, edited, and mixed-author text. That would help identify why the scores overlap and give the label coverage test examples across the score range. I would also add input checks for control characters and extreme lengths, and define how to handle punctuation and emoji-only submissions before scoring them. I stopped after one threshold change so the measured comparison isolates its effect.
 
-
-
-**The trade I'd make if this ran for real:**
-
-<!-- Two sentences. Fewer wrong accusations means more AI text getting through.
-     Say which way you'd go and WHO PAYS FOR IT. -->
-
-
+In production I would favor fewer wrong accusations because a false flag can harm a writer's reputation or affect how their work is reviewed. More AI-generated writing would then reach the unsure band, leaving moderators and reviewers with more cases to assess.
 
 <!-- ═════════════════════════════════════════════════════════════════════
 
