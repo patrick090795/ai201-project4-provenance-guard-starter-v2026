@@ -154,7 +154,7 @@ def health():
 # ── YOU BUILD THIS ────────────────────────────────────────────────────────────
 
 @app.post("/submit")
-# @limiter.limit(f"{config.RATE_LIMIT_PER_MINUTE}/minute;{config.RATE_LIMIT_PER_DAY}/day")
+@limiter.limit(f"{config.RATE_LIMIT_PER_MINUTE}/minute;{config.RATE_LIMIT_PER_DAY}/day")
 def submit():
     """
     Take a piece of text, decide about it, log the decision, answer.
@@ -205,6 +205,11 @@ def submit():
     payload = request.get_json(silent=True)
 
     if not isinstance(payload, dict):
+        audit.log_rejection(
+            creator_id="unknown",
+            reason="invalid_json_object",
+            status_code=400,
+        )
         return jsonify({
             "error": "invalid_input",
             "message": "Send a JSON object with text and creator_id.",
@@ -214,12 +219,26 @@ def submit():
     creator_id = payload.get("creator_id")
 
     if not isinstance(text, str) or not text.strip():
+        audit.log_rejection(
+            creator_id=(
+                creator_id
+                if isinstance(creator_id, str) and creator_id.strip()
+                else "unknown"
+            ),
+            reason="invalid_text",
+            status_code=400,
+        )
         return jsonify({
             "error": "invalid_input",
             "message": "text must be a non-empty string.",
         }), 400
 
     if not isinstance(creator_id, str) or not creator_id.strip():
+        audit.log_rejection(
+            creator_id="unknown",
+            reason="invalid_creator_id",
+            status_code=400,
+        )
         return jsonify({
             "error": "invalid_input",
             "message": "creator_id must be a non-empty string.",
@@ -228,11 +247,22 @@ def submit():
     try:
         model_score = detector.model_signal(text)
     except ValueError as exc:
+        audit.log_rejection(
+            creator_id=creator_id,
+            reason="detector_input_error",
+            message=str(exc),
+            status_code=400,
+        )
         return jsonify({
             "error": "invalid_input",
             "message": str(exc),
         }), 400
     except detector.DetectorUnavailable:
+        audit.log_rejection(
+            creator_id=creator_id,
+            reason="detector_unavailable",
+            status_code=503,
+        )
         return jsonify({
             "error": "detector_unavailable",
             "message": "The detector could not load. Check the server terminal.",
@@ -242,9 +272,8 @@ def submit():
     combined_score = scoring.combine_signals(model_score, style_score)
 
     content_id = str(uuid.uuid4())
-
-    # Temporary guess and label until Milestone 5.
     guess, label = scoring.score_to_label(combined_score)
+
     audit.log_decision(
         content_id=content_id,
         creator_id=creator_id,

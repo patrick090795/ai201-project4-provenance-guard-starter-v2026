@@ -253,8 +253,22 @@ curl "http://127.0.0.1:5000/log?limit=2"
 ---
 
 ## Rate Limiting
+## Rate Limiting
 
-**My limits:** ___ per minute, ___ per day
+I set the submission limits to 10 requests per minute and 200 per day
+per creator ID, falling back to the caller's address when no usable
+creator ID is provided. These limits allow a writer to check several
+pieces while slowing automated attempts to probe the detector.
+
+The 15-request flood test returned:
+
+```text
+200 200 200 200 200 200 200 200 200 200 429 429 429 429 429
+```
+
+Ten requests succeeded and five were rate limited. I also tested an
+empty-text submission: it returned HTTP 400 and created an audit entry
+with reason `invalid_text`.
 
 **Why those numbers and not others:**
 <!-- Think about two people: a real writer submitting their own work a few
