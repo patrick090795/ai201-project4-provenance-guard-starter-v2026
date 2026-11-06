@@ -394,9 +394,9 @@ These ten entries come from the baseline run. The final entry records one of the
 The writing scenarios were rerun at both thresholds using the same inputs after an earlier rerun omitted six samples. The two writing groups are paired by topic. Each uses ten pieces, with my versions based on the AI examples.
 
 | Criterion | Target | Before 1 | Before 2 | Before 3 | After 1 | After 2 | After 3 | Verdict |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+|---|---|---:|---:|---:|---:|---:|---:|---|
 | 1. False positives | At most 1 of 10 flagged as AI | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | 0/10 | MET |
-| 2. Score separation | AI mean at least 0.30 higher | 0.011005 | 0.011005 | 0.011005 | 0.011005 | 0.011005 | 0.011005 | MISSED |
+| 2. Score separation | AI mean at least 0.30 higher | 0.011005 | 0.011005 | 0.011005 | 0.011005 | 0.011005 | 0.011005 |   MISSED |
 | 3. Label coverage | All three labels | 2/3 | 2/3 | 2/3 | 2/3 | 2/3 | 2/3 | MISSED |
 | 4. Appeal path | Five confirmations and matching audit entries | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 | 5/5 | MET |
 | 5. Invalid requests | Six JSON 400 responses and one JSON 404 | 7/7 | 7/7 | 7/7 | 7/7 | 7/7 | 7/7 | MET with fresh quota |
