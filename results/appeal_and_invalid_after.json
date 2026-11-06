@@ -1,0 +1,455 @@
+[
+  {
+    "trial": 1,
+    "appeals": [
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "69abfd0c-f5de-4d6a-bd72-ab9c89e61b3d",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "69abfd0c-f5de-4d6a-bd72-ab9c89e61b3d",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_1_1",
+          "event": "appeal",
+          "reasoning": "Trial 1, appeal 1: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:01+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "2cb2ab64-c95f-49d9-8549-b20f0a23eda6",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "2cb2ab64-c95f-49d9-8549-b20f0a23eda6",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_1_2",
+          "event": "appeal",
+          "reasoning": "Trial 1, appeal 2: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:02+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "05817031-9661-47c5-9ce5-a26d0186aaa6",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "05817031-9661-47c5-9ce5-a26d0186aaa6",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_1_3",
+          "event": "appeal",
+          "reasoning": "Trial 1, appeal 3: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:02+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "199ac9c1-48f9-4d03-8850-2ddcff1af2e8",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "199ac9c1-48f9-4d03-8850-2ddcff1af2e8",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_1_4",
+          "event": "appeal",
+          "reasoning": "Trial 1, appeal 4: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:02+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "4712c82e-da3f-44cb-8b71-e2d080492a20",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "4712c82e-da3f-44cb-8b71-e2d080492a20",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_1_5",
+          "event": "appeal",
+          "reasoning": "Trial 1, appeal 5: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:02+00:00"
+        },
+        "passed": true
+      }
+    ],
+    "invalid_submits": [
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      }
+    ],
+    "unknown_appeal": {
+      "http": 404,
+      "json": {
+        "error": "not_found",
+        "message": "No submission exists with that content_id."
+      }
+    }
+  },
+  {
+    "trial": 2,
+    "appeals": [
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "0671cae2-346f-4945-a041-2cde21eca2c0",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "0671cae2-346f-4945-a041-2cde21eca2c0",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_2_1",
+          "event": "appeal",
+          "reasoning": "Trial 2, appeal 1: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:03+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "0fce3bf0-c833-4679-8f19-612f79e0c8b2",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "0fce3bf0-c833-4679-8f19-612f79e0c8b2",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_2_2",
+          "event": "appeal",
+          "reasoning": "Trial 2, appeal 2: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:03+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "e48646a1-b658-4d36-80b3-7a8afe83d0ac",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "e48646a1-b658-4d36-80b3-7a8afe83d0ac",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_2_3",
+          "event": "appeal",
+          "reasoning": "Trial 2, appeal 3: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:03+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "afe3a10b-b74d-40fc-91af-857a3053a263",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "afe3a10b-b74d-40fc-91af-857a3053a263",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_2_4",
+          "event": "appeal",
+          "reasoning": "Trial 2, appeal 4: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:04+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "037d880e-a019-4a74-864c-a54cac055555",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "037d880e-a019-4a74-864c-a54cac055555",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_2_5",
+          "event": "appeal",
+          "reasoning": "Trial 2, appeal 5: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:04+00:00"
+        },
+        "passed": true
+      }
+    ],
+    "invalid_submits": [
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      }
+    ],
+    "unknown_appeal": {
+      "http": 404,
+      "json": {
+        "error": "not_found",
+        "message": "No submission exists with that content_id."
+      }
+    }
+  },
+  {
+    "trial": 3,
+    "appeals": [
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "28cccb8d-94b7-4ba2-8268-054f69385f24",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "28cccb8d-94b7-4ba2-8268-054f69385f24",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_3_1",
+          "event": "appeal",
+          "reasoning": "Trial 3, appeal 1: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:04+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "86d2adc0-21b9-469b-9227-2abb5046be15",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "86d2adc0-21b9-469b-9227-2abb5046be15",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_3_2",
+          "event": "appeal",
+          "reasoning": "Trial 3, appeal 2: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:04+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "503e87d6-46ec-4812-bf5f-e2e3c59a2ba3",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "503e87d6-46ec-4812-bf5f-e2e3c59a2ba3",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_3_3",
+          "event": "appeal",
+          "reasoning": "Trial 3, appeal 3: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:05+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "511368c9-ad56-4022-b61d-86f36cf1f9ff",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "511368c9-ad56-4022-b61d-86f36cf1f9ff",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_3_4",
+          "event": "appeal",
+          "reasoning": "Trial 3, appeal 4: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:05+00:00"
+        },
+        "passed": true
+      },
+      {
+        "response": {
+          "http": 200,
+          "json": {
+            "content_id": "d9021ee6-e744-4026-a25d-0c257cc53994",
+            "message": "Your appeal has been recorded for review.",
+            "status": "under_review"
+          }
+        },
+        "audit": {
+          "content_id": "d9021ee6-e744-4026-a25d-0c257cc53994",
+          "creator_id": "appeal_6c8ba9ae64b54a1cb3116466f62281fe_3_5",
+          "event": "appeal",
+          "reasoning": "Trial 3, appeal 5: please review my submission.",
+          "status": "under_review",
+          "timestamp": "2026-11-06T04:07:05+00:00"
+        },
+        "passed": true
+      }
+    ],
+    "invalid_submits": [
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "text must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      },
+      {
+        "http": 400,
+        "json": {
+          "error": "invalid_input",
+          "message": "creator_id must be a non-empty string."
+        }
+      }
+    ],
+    "unknown_appeal": {
+      "http": 404,
+      "json": {
+        "error": "not_found",
+        "message": "No submission exists with that content_id."
+      }
+    }
+  }
+]

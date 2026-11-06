@@ -22,9 +22,15 @@ A scenario carries **either** of these:
               because you cannot express "the field is missing" as a string.
 """
 WRITING_SAMPLES = [
+    "I created a little program that assigns an AI-likelihood score to a piece of writing. It may also state that it is uncertain, which is important when there is scant data.",
+    "The resume form contained my email address, but the PDF did not. In order to see what transpired between completing the form and downloading the file, I first looked at the template.",
+    "I used the same creator ID to send fifteen requests. The next five responded HTTP 429 after the first 10 went through. I discovered all five rejections when I looked through the audit trail.",
+    "It was difficult for me to distinguish between a hot take and an analysis. Some remarks sounded compelling even though they provided very little evidence, so I searched for a specific detail that backed the allegation.",
+    "In one terminal, I launch the Flask application and let it run. In order to see the response and continue to notice any server issues, I then launch a second terminal to send requests.",
+    "Hello, I got stuck setting up the test files while working on the next section of the assignment. Could you let me know which folder they belong in?",
     "I spent some time working at the library after lunch. My laptop battery was low, so I spent the first few minutes searching for a seat close to an outlet.",
     "I kept looking up the room number before entering class throughout my first week. Finding the entrance nearest to my classroom took several days.",
-    "If someone's writing is flagged by  detector, they ought to be given an opportunity to clarify how they produced it. The way a teacher or reviewer handles their work can be impacted by the incorrect flag.",
+    "If someone's writing is flagged by a detector, they ought to be given an opportunity to clarify how they produced it. The way a teacher or reviewer handles their work can be impacted by the incorrect flag.",
     "I attempted to request something that wasn't in the lists while testing FitFindr. That made it easier for me to see if the agent would pause and describe what transpired rather than recommending an item it hadn't located.",
 ]
 
